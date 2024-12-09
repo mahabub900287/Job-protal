@@ -2,8 +2,8 @@
 
 namespace App\DataTables\Admin;
 
-use App\Models\User;
-use Illuminate\Support\Str;
+use App\Models\JobApplication;
+use App\Models\JobPost;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Services\DataTable;
@@ -11,7 +11,7 @@ use Yajra\DataTables\Html\Builder as HtmlBuilder;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use PDF;
 
-class UserDataTable extends DataTable
+class JobPostDataTable extends DataTable
 {
     /**
      * Build the DataTable class.
@@ -25,14 +25,8 @@ class UserDataTable extends DataTable
             ->addColumn('action', function ($item) {
                 $buttons = '';
                 return '<div class="ic-action-wrapper">
-                <div class="ic-action">
-                            <a href="' . route('admin.users.show', $item->id) . '"><i class="ri-eye-line"></i></a>
-                        </div> 
                         <div class="ic-action">
-                            <a href="' . route('admin.users.edit', $item->id) . '"><i class="ri-pencil-line"></i></a>
-                        </div>
-                        <div class="ic-action">
-                        <form action="' . route('admin.users.destroy', $item->id) . '"  id="delete-form-' . $item->id . '" method="post" style="">
+                        <form action="' . route('admin.job-post.destroy', $item->id) . '"  id="delete-form-' . $item->id . '" method="post" style="">
                             <input type="hidden" name="_token" value="' . csrf_token() . '">
                             <input type="hidden" name="_method" value="DELETE">
                             <button onclick="return makeDeleteRequest(event, ' . $item->id . ')"  type="submit">
@@ -40,27 +34,15 @@ class UserDataTable extends DataTable
                             </button>
                         </form>
                     </div></div>';
-            })->editColumn('avatar', function ($item) {
-                $url = get_storage_image('user', $item->avatar);
-
-                return '<div class="ic_image">
-                <img  src="' . $url . '" alt="' . $item->name . '" /></div>';
-            })->editColumn('first_name', function ($item) {
-                $full_name = $item->first_name . ' ' . $item->last_name;
-                return $full_name;
-            })->editColumn('status', function ($item) {
-                $badge = $item->status == ACTIVE ? 'active' : 'inactive ';
-                return '<div class="ic-badge ' . $badge . '">' . Str::upper($item->status) . '</div>';
-            })
-            ->rawColumns(['action', 'first_name', 'avatar', 'status'])->addIndexColumn();
+            })->rawColumns(['action'])->addIndexColumn();
     }
 
     /**
      * Get the query source of dataTable.
      */
-    public function query(User $model): QueryBuilder
+    public function query(JobPost $model): QueryBuilder
     {
-        return $model->newQuery();
+        return $model->newQuery()->with('category')->latest();
     }
 
     /**
@@ -83,10 +65,10 @@ class UserDataTable extends DataTable
                 'order' => [[0, 'desc']],
                 'buttons' => [
                     [
-                        'text' => 'Add User', // Button text
+                        'text' => 'Add New Job', // Button text
                         'className' => 'btn btn-info', // Button style
                         'action' => 'function(e, dt, node, config) {
-                window.location.href = "' . route('admin.users.create') . '";
+                window.location.href = "' . route('admin.job-post.create') . '";
             }',
                     ],
                 ],
@@ -101,10 +83,12 @@ class UserDataTable extends DataTable
     {
         return [
             Column::computed('DT_RowIndex', 'SL#'),
-            Column::make('avatar', 'avatar')->title('Image'),
-            Column::make('first_name', 'first_name')->title('Full Name'),
-            Column::make('email', 'email')->title('Email'),
-            Column::make('status', 'status')->title('Status'),
+            Column::make('title', 'title')->title('Title'),
+            Column::make('category.name', 'category.name')->title('Category'),
+            Column::make('company_name', 'company_name')->title('Company Name'),
+            Column::make('salary_range', 'salary_range')->title('Salary Range'),
+            Column::make('address', 'address')->title('Address'),
+            Column::make('address', 'address')->title('Address'),
         ];
     }
 
@@ -113,7 +97,7 @@ class UserDataTable extends DataTable
      */
     protected function filename(): string
     {
-        return 'User_' . date('YmdHis');
+        return 'JobPost_' . date('YmdHis');
     }
     public function pdf()
     {

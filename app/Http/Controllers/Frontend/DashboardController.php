@@ -20,9 +20,15 @@ class DashboardController extends Controller
         $categories = Category::all();
         return view('frontend.page.all_category', compact('categories'));
     }
-    public function allJob()
+    public function allJob(Request $request)
     {
-        $jobs = JobPost::has('category.jobPosts', '>', 0)->latest()->paginate(8);
+        if ($request->has('category_id')) {
+            $jobs = JobPost::with('category')->where('category_id', $request->category_id)->latest()->paginate(8);
+            return view('frontend.page.all_job', compact('jobs'));
+        } else {
+            $jobs = JobPost::has('category.jobPosts', '>', 0)->latest()->paginate(8);
+        }
+
         return view('frontend.page.all_job', compact('jobs'));
     }
     public function jobDetails(Request $request)

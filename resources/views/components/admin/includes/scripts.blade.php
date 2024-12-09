@@ -5,6 +5,7 @@
 <script src="{{ asset('assets/common/js/sweetalert2@10.js') }}"></script>
 {{ $topScript ?? '' }}
 <!--Custom js use development purpose-->
+<script src="{{ asset('assets/common/js/custom-dev.js') }}"></script>
 <script src="{{ asset('assets/admin/js/custom.js') }}"></script>
 {{ $bottomScript ?? '' }}
 {{-- @vite('resources/js/app.js') --}}

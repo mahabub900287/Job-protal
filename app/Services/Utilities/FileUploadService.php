@@ -50,9 +50,9 @@ class FileUploadService
     {
         try {
             $src_path = $image->storeAs($path, $image_name);
-
             return $src_path;
         } catch (\Exception $e) {
+            
             log_error($e);
         }
     }

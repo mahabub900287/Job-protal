@@ -74,7 +74,7 @@
                             </div>
                             <div class="services-cap">
                                 <h5><a
-                                        href="{{ route('job.details', ['category_id' => $category->id]) }}">{{ $category->name }}</a>
+                                        href="{{ route('all.job', ['category_id' => $category->id]) }}">{{ $category->name }}</a>
                                 </h5>
                                 <span>({{ $category->countJobPosts() }})</span>
                             </div>

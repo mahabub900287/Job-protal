@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\JobPostController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\New\AdminController;
@@ -16,12 +17,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/profile/update/{id}', [AdminProfileController::class, 'profileupdate'])->name('profile.update');
     //user
     Route::resource('users', UserController::class);
-    Route::resource('new-admin', AdminController::class);
-    // Role Permissions
-    Route::resource('/roles', RolePermissionController::class);
-
+    Route::resource('/job-post', JobPostController::class);
     Route::controller(SettingsController::class)->group(function () {
-        Route::get('/application-settings', 'index')->name('application.settings');
-        Route::post('/application-settings-update', 'update')->name('application.settings-update');
+        Route::get('/job-application-list', 'index')->name('application.list');
+        Route::delete('/job-application-delete/{id}', 'destroy')->name('application.delete');
     });
 });
